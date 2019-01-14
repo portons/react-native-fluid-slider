@@ -54,7 +54,21 @@ export default class App extends React.Component {
   }
 
   /* On touch, animated the Value & Drop element positions to go 'up' */
-  onTouch = () => {
+  onTouch = (_, gestureState) => {
+    this.wait = true;
+
+    this.offsetX = gestureState.moveX - PADDING * 2;
+
+    Animated.timing(this.translateX, {
+      toValue: this.offsetX,
+      duration: 100
+    }).start(() => {
+      this.translateX.setOffset(this.offsetX);
+      this.translateX.setValue(0);
+
+      this.wait = false;
+    });
+
     Animated.parallel([
       Animated.spring(this.translateY, {
         toValue: -31,
@@ -88,19 +102,20 @@ export default class App extends React.Component {
   setPanResponder = () => {
     this.panResponder = PanResponder.create({
       onMoveShouldSetPanResponder: this.onTouch,
-      onPanResponderGrant: () => {
-        this.translateX.setOffset(this.offsetX);
-        this.translateX.setValue(0);
-      },
       onPanResponderMove: (_, gestureState) => {
+        if (this.wait) {
+          return;
+        }
+
         if (this.offsetX + gestureState.dx < 0) {
           this.overflow = this.offsetX + gestureState.dx;
 
           return;
         }
 
-        if (this.offsetX + gestureState.dx > this.width - 30) {
-          this.overflow = this.offsetX + gestureState.dx - (this.width - 30);
+        if (this.offsetX + gestureState.dx > this.width - PADDING * 2) {
+          this.overflow =
+            this.offsetX + gestureState.dx - (this.width - PADDING * 2);
 
           return;
         }
@@ -138,14 +153,15 @@ export default class App extends React.Component {
   setInitialValue = () => {
     const { initialValue } = this.state;
 
-    this.valueRef.setNativeProps({ text: `${initialValue}` });
-    const initialTranslateX = this.valueInterpolator.invert(initialValue);
+    this.valueRef.setNativeProps({ text: `${initialValue.toFixed(0)}` });
+    const initialTranslateX = this.valueInterpolator.invert(initialValue.toFixed(0));
 
     this.translateX.setValue(initialTranslateX);
     this.offsetX = initialTranslateX;
   };
 
-  interpolateValue = ({ value }) => this.valueRef.setNativeProps({ text: `${this.valueInterpolator(value)}` });
+  interpolateValue = ({ value }) =>
+    this.valueRef.setNativeProps({ text: `${this.valueInterpolator(value).toFixed(0)}` });
 
   setValueRef = ref => (this.valueRef = ref);
 
@@ -202,7 +218,7 @@ export default class App extends React.Component {
         borderColor: this.state.valueBorderColor,
         height: this.state.size,
         width: this.state.size,
-        borderRadius: this.state.size/2,
+        borderRadius: this.state.size / 2,
         transform: [
           { translateY: this.translateY },
           { translateX: this.translateX }
@@ -214,9 +230,7 @@ export default class App extends React.Component {
         style={[styles.label, { color: this.state.valueTextColor }]}
         ref={this.setValueRef}
         editable={false}
-      >
-        0
-      </TextInput>
+      />
     </Animated.View>
   );
 
