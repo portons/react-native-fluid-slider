@@ -8,36 +8,18 @@ import {
   Text
 } from 'react-native';
 import { scaleLinear } from 'd3-scale';
+import PropTypes from 'prop-types';
 
-const PADDING = 20;
-
-export default class App extends React.Component {
-  constructor() {
-    super();
-
-    /* All of these will be moved to props passed to the slider */
-    this.state = {
-      min: -50,
-      max: 200,
-      size: 30, // Height of the Slider && (height & width) of the Value & Drop elements
-      backgroundColor: '#6168e7',
-      valueBorderColor: '#6168e7',
-      dropColor: '#6168e7',
-      sliderTextColor: 'white',
-      valueTextColor: 'black',
-      initialValue: 75,
-      sliderBorderRadius: 5,
-      sliderTextStyle: {
-        fontWeight: 'bold'
-      }
-    };
+export default class Slider extends React.PureComponent {
+  constructor(props) {
+    super(props);
 
     /* These 2 are 'Animated Values', which are passed to the Value element, and responsible
      * for its movement animation while dragging */
     this.translateY = new Animated.Value(0);
     this.translateX = new Animated.Value(0);
 
-    this.middle = (this.state.min + this.state.max) / 4;
+    this.middle = (props.min + props.max) / 4;
 
     /* This one is responsible for the little 'drop' beneath the value */
     this.backdropTranslateY = new Animated.Value(0);
@@ -68,9 +50,9 @@ export default class App extends React.Component {
 
     /* Set the offset to the current touch position */
     if (normalizedMoveX > this.middle) {
-      this.offsetX = Math.min(this.sliderWidth - this.state.size, normalizedMoveX - (this.state.size/2));
+      this.offsetX = Math.min(this.sliderWidth - this.props.size, normalizedMoveX - (this.props.size/2));
     } else {
-      this.offsetX = Math.max(0, normalizedMoveX - (this.state.size / 2));
+      this.offsetX = Math.max(0, normalizedMoveX - (this.props.size / 2));
     }
 
     /* Animated the Value element to current touch position, and only then reset 'wait' flag and allow
@@ -87,7 +69,7 @@ export default class App extends React.Component {
 
     Animated.parallel([
       Animated.spring(this.translateY, {
-        toValue: -this.state.size - 1,
+        toValue: -this.props.size - 1,
         duration: 200,
         bounciness: 15
       }),
@@ -129,9 +111,9 @@ export default class App extends React.Component {
           return;
         }
 
-        if (this.offsetX + gestureState.dx > this.sliderWidth - this.state.size) {
+        if (this.offsetX + gestureState.dx > this.sliderWidth - this.props.size) {
           this.overflow =
-            this.offsetX + gestureState.dx - (this.sliderWidth - this.state.size);
+            this.offsetX + gestureState.dx - (this.sliderWidth - this.props.size);
 
           return;
         }
@@ -168,8 +150,8 @@ export default class App extends React.Component {
   /* When we get the slider's width, we can interpolate the values based on the width */
   setValueInterpolator = () => {
     this.valueInterpolator = scaleLinear()
-      .domain([0, this.sliderWidth - this.state.size])
-      .range([this.state.min, this.state.max])
+      .domain([0, this.sliderWidth - this.props.size])
+      .range([this.props.min, this.props.max])
       .clamp(true);
 
     /* When the value is interpolated, we can set the initial value & the initial X position */
@@ -177,7 +159,7 @@ export default class App extends React.Component {
   };
 
   setInitialValue = () => {
-    const { initialValue } = this.state;
+    const { initialValue } = this.props;
 
     this.valueRef.setNativeProps({ text: `${initialValue.toFixed(0)}` });
     const initialTranslateX = this.valueInterpolator.invert(
@@ -199,10 +181,10 @@ export default class App extends React.Component {
     <Animated.View
       style={{
         ...styles.drop,
-        backgroundColor: this.state.dropColor,
-        height: this.state.size,
-        width: this.state.size,
-        borderRadius: this.state.size / 2,
+        backgroundColor: this.props.dropColor || this.props.color,
+        height: this.props.size,
+        width: this.props.size,
+        borderRadius: this.props.size / 2,
         transform: [
           { translateY: this.backdropTranslateY },
           { translateX: this.translateX }
@@ -217,29 +199,29 @@ export default class App extends React.Component {
       style={[
         styles.sliderBar,
         {
-          backgroundColor: this.state.backgroundColor,
-          height: this.state.size,
-          borderRadius: this.state.sliderBorderRadius
+          backgroundColor: this.props.backgroundColor || this.props.color,
+          height: this.props.size,
+          borderRadius: this.props.sliderBorderRadius
         }
       ]}
     >
       <Text
         style={[
           styles.label,
-          { color: this.state.sliderTextColor },
-          this.state.sliderTextStyle
+          { color: this.props.sliderTextColor },
+          this.props.sliderTextStyle
         ]}
       >
-        {this.state.min}
+        {this.props.min}
       </Text>
       <Text
         style={[
           styles.label,
-          { color: this.state.sliderTextColor },
-          this.state.sliderTextStyle
+          { color: this.props.sliderTextColor },
+          this.props.sliderTextStyle
         ]}
       >
-        {this.state.max}
+        {this.props.max}
       </Text>
     </View>
   );
@@ -249,10 +231,10 @@ export default class App extends React.Component {
       pointerEvents="none"
       style={{
         ...styles.value,
-        borderColor: this.state.valueBorderColor,
-        height: this.state.size,
-        minWidth: this.state.size,
-        borderRadius: this.state.size / 2,
+        borderColor: this.props.valueBorderColor || this.props.color,
+        height: this.props.size,
+        minWidth: this.props.size,
+        borderRadius: this.props.size / 2,
         transform: [
           { translateY: this.translateY },
           { translateX: this.translateX }
@@ -261,7 +243,7 @@ export default class App extends React.Component {
     >
       <TextInput
         allowFontScaling={false}
-        style={[styles.label, { color: this.state.valueTextColor }]}
+        style={[styles.label, { color: this.props.valueTextColor }]}
         ref={this.setValueRef}
         editable={false}
       />
@@ -280,6 +262,35 @@ export default class App extends React.Component {
     );
   }
 }
+
+Slider.defaultProps = {
+  min: 0,
+  max: 100,
+  size: 30,
+  color: '#6168e7',
+  sliderTextColor: 'white',
+  valueTextColor: 'black',
+  initialValue: 50,
+  sliderBorderRadius: 5,
+  sliderTextStyle: {
+    fontWeight: 'bold'
+  }
+};
+
+Slider.propTypes = {
+  min: PropTypes.number.isRequired,
+  max: PropTypes.number.isRequired,
+  size: PropTypes.number.isRequired,
+  color: PropTypes.string,
+  backgroundColor: PropTypes.string,
+  valueBorderColor: PropTypes.string,
+  dropColor: PropTypes.string,
+  sliderTextColor: PropTypes.string,
+  valueTextColor: PropTypes.string,
+  initialValue: PropTypes.number.isRequired,
+  sliderBorderRadius: PropTypes.number,
+  sliderTextStyle: PropTypes.object
+};
 
 const styles = StyleSheet.create({
   wrapper: {
