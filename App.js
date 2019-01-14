@@ -19,7 +19,10 @@ export default class App extends React.Component {
       valueBorderColor: '#6168e7',
       dropColor: '#6168e7',
       sliderTextColor: 'white',
-      valueTextColor: 'black'
+      valueTextColor: 'black',
+      sliderTextStyle: {
+        fontWeight: 'bold'
+      }
     };
 
     this.translateY = new Animated.Value(0);
@@ -30,7 +33,7 @@ export default class App extends React.Component {
     this.offsetX = 0;
     this.overflow = 0;
 
-    this.setPanresponder();
+    this.setPanResponder();
   }
 
   onTouch = () => {
@@ -38,12 +41,12 @@ export default class App extends React.Component {
       Animated.spring(this.translateY, {
         toValue: -31,
         duration: 200,
-        bounciness: 18
+        bounciness: 15
       }),
       Animated.spring(this.backdropTranslateY, {
         toValue: -2,
-        duration: 400,
-        bounciness: 18
+        duration: 300,
+        bounciness: 15
       })
     ]).start();
 
@@ -63,7 +66,7 @@ export default class App extends React.Component {
     ]).start();
   };
 
-  setPanresponder = () => {
+  setPanResponder = () => {
     this.panResponder = PanResponder.create({
       onMoveShouldSetPanResponder: this.onTouch,
       onPanResponderGrant: () => {
@@ -102,62 +105,65 @@ export default class App extends React.Component {
 
   setValueRef = ref => (this.valueRef = ref);
 
-  render() {
-    const {
-      backgroundColor,
-      valueBorderColor,
-      dropColor,
-      sliderTextColor,
-      valueTextColor,
-      min,
-      max
-    } = this.state;
+  renderDrop = () => (
+    <Animated.View
+      style={{
+        ...styles.drop,
+        backgroundColor: this.state.dropColor,
+        transform: [
+          { translateY: this.backdropTranslateY },
+          { translateX: this.translateX }
+        ]
+      }}
+    />
+  );
 
+  renderSlider = () => (
+    <View
+      onLayout={this.onLayout}
+      style={[styles.sliderBar, { backgroundColor: this.state.backgroundColor }]}
+    >
+      <Text style={[styles.label, { color: this.state.sliderTextColor }, this.state.sliderTextStyle]}>
+        {this.state.min}
+      </Text>
+      <Text style={[styles.label, { color: this.state.sliderTextColor }, this.state.sliderTextStyle]}>
+        {this.state.max}
+      </Text>
+    </View>
+  );
+
+  renderValue = () => (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        ...styles.value,
+        borderColor: this.state.valueBorderColor,
+        transform: [
+          { translateY: this.translateY },
+          { translateX: this.translateX }
+        ]
+      }}
+    >
+      <TextInput
+        style={[styles.label, { color: this.state.valueTextColor }]}
+        ref={this.setValueRef}
+        editable={false}
+      >
+        0
+      </TextInput>
+    </Animated.View>
+  );
+
+  render() {
     return (
       <View style={styles.container}>
         <View style={styles.wrapper} {...this.panResponder.panHandlers}>
-          <Animated.View
-            style={{
-              ...styles.drop,
-              backgroundColor: dropColor,
-              transform: [
-                { translateY: this.backdropTranslateY },
-                { translateX: this.translateX }
-              ]
-            }}
-          />
 
-          <View
-            onLayout={this.onLayout}
-            style={[styles.sliderBar, { backgroundColor }]}
-          >
-            <Text style={[styles.label, { color: sliderTextColor }]}>
-              {min}
-            </Text>
-            <Text style={[styles.label, { color: sliderTextColor }]}>
-              {max}
-            </Text>
-          </View>
+          { this.renderDrop() }
 
-          <Animated.View
-            pointerEvents="none"
-            style={{
-              ...styles.value,
-              borderColor: valueBorderColor,
-              transform: [
-                { translateY: this.translateY },
-                { translateX: this.translateX }
-              ]
-            }}
-          >
-            <TextInput
-              style={[styles.label, { color: valueTextColor }]}
-              ref={this.setValueRef}
-              editable={false}
-            >
-              0
-            </TextInput>
-          </Animated.View>
+          { this.renderSlider() }
+
+          { this.renderValue() }
         </View>
       </View>
     );
