@@ -15,7 +15,7 @@ import PropTypes from './prop-types';
 const LEFT = 0;
 const RIGHT = 1;
 
-export default class Slider extends React.PureComponent {
+export default class SliderIos extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -352,7 +352,7 @@ export default class Slider extends React.PureComponent {
   }
 }
 
-Slider.defaultProps = {
+SliderIos.defaultProps = {
   size: 30,
   color: '#6168e7',
   sliderTextColor: 'white',
@@ -367,7 +367,7 @@ Slider.defaultProps = {
   }
 };
 
-Slider.propTypes = PropTypes;
+SliderIos.propTypes = PropTypes;
 
 const styles = StyleSheet.create({
   wrapper: {
