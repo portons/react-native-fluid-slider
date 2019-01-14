@@ -188,14 +188,14 @@ export default class Slider extends React.PureComponent {
       return;
     }
 
-    const interpolatedValue = this.valueInterpolator(value);
+    const interpolatedValue = this.valueInterpolator(value).toFixed(this.props.decimalPrecision);
 
     if (this.props.onValueChange) {
       this.onValueChange(interpolatedValue);
     }
 
     this.valueRef.setNativeProps({
-      text: `${interpolatedValue.toFixed(0)}`
+      text: `${interpolatedValue}`
     });
   };
 
@@ -301,6 +301,7 @@ Slider.defaultProps = {
   valueTextStyle: {},
   initialValue: 50,
   sliderBorderRadius: 5,
+  decimalPrecision: 0,
   sliderTextStyle: {
     fontWeight: 'bold'
   }
@@ -318,6 +319,7 @@ Slider.propTypes = {
   valueTextColor: PropTypes.string,
   initialValue: PropTypes.number.isRequired,
   sliderBorderRadius: PropTypes.number,
+  decimalPrecision: PropTypes.number,
   sliderTextStyle: PropTypes.object,
   onValueChange: PropTypes.func.isRequired,
   onSlideStart: PropTypes.func,
