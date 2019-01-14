@@ -154,7 +154,7 @@ export default class App extends React.Component {
   /* When we get the slider's width, we can interpolate the values based on the width */
   setValueInterpolator = () => {
     this.valueInterpolator = scaleLinear()
-      .domain([0, this.width - PADDING])
+      .domain([0, this.width - this.state.size])
       .range([this.state.min, this.state.max])
       .clamp(true);
 
