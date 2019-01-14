@@ -52,5 +52,7 @@ export default {
   onValueChangeThrottle: PropTypes.number,
   onValueChange: PropTypes.func.isRequired,
   onSlideStart: PropTypes.func,
-  onSlideEnd: PropTypes.func
+  onSlideEnd: PropTypes.func,
+  leftValueRenderer: PropTypes.func,
+  rightValueRenderer: PropTypes.func,
 }

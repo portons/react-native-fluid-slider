@@ -249,24 +249,37 @@ export default class Slider extends React.PureComponent {
         }
       ]}
     >
-      <Text
-        style={[
-          styles.minMaxLabel,
-          { color: this.props.sliderTextColor },
-          this.props.sliderTextStyle
-        ]}
-      >
-        {this.props.range[LEFT]}
-      </Text>
-      <Text
-        style={[
-          styles.minMaxLabel,
-          { color: this.props.sliderTextColor },
-          this.props.sliderTextStyle
-        ]}
-      >
-        {this.props.range[RIGHT]}
-      </Text>
+      {
+        this.props.leftValueRenderer
+          ? this.props.leftValueRenderer()
+          : (
+            <Text
+              style={[
+                styles.minMaxLabel,
+                { color: this.props.sliderTextColor },
+                this.props.sliderTextStyle
+              ]}
+            >
+              {this.props.range[LEFT]}
+            </Text>
+          )
+      }
+
+      {
+        this.props.rightValueRenderer
+          ? this.props.rightValueRenderer()
+          : (
+            <Text
+              style={[
+                styles.minMaxLabel,
+                { color: this.props.sliderTextColor },
+                this.props.sliderTextStyle
+              ]}
+            >
+              {this.props.range[LEFT]}
+            </Text>
+          )
+      }
     </View>
   );
 
