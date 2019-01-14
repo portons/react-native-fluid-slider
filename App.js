@@ -7,6 +7,9 @@ import {
   PanResponder,
   Text
 } from 'react-native';
+import { scaleLinear } from 'd3-scale';
+
+const PADDING = 15;
 
 export default class App extends React.Component {
   constructor() {
@@ -34,6 +37,7 @@ export default class App extends React.Component {
     this.overflow = 0;
 
     this.setPanResponder();
+    this.translateX.addListener(this.interpolateValue);
   }
 
   onTouch = () => {
@@ -87,7 +91,6 @@ export default class App extends React.Component {
         }
 
         this.translateX.setValue(gestureState.dx);
-        // this.valueRef.setNativeProps({ text: gestureState.dx });
       },
       onPanResponderRelease: (_, gestureState) => {
         this.offsetX = this.offsetX + gestureState.dx - this.overflow;
@@ -101,7 +104,17 @@ export default class App extends React.Component {
 
   onLayout = ({ nativeEvent: { layout } }) => {
     this.width = layout.width;
+
+    this.setValueInterpolator();
   };
+
+  setValueInterpolator = () => {
+    this.valueInterpolator = scaleLinear()
+      .domain([PADDING, this.width - PADDING])
+      .range([this.state.min, this.state.max]);
+  };
+
+  interpolateValue = ({ value }) => this.valueRef.setNativeProps({ text: this.valueInterpolator(value).toString() });
 
   setValueRef = ref => (this.valueRef = ref);
 
@@ -121,12 +134,27 @@ export default class App extends React.Component {
   renderSlider = () => (
     <View
       onLayout={this.onLayout}
-      style={[styles.sliderBar, { backgroundColor: this.state.backgroundColor }]}
+      style={[
+        styles.sliderBar,
+        { backgroundColor: this.state.backgroundColor }
+      ]}
     >
-      <Text style={[styles.label, { color: this.state.sliderTextColor }, this.state.sliderTextStyle]}>
+      <Text
+        style={[
+          styles.label,
+          { color: this.state.sliderTextColor },
+          this.state.sliderTextStyle
+        ]}
+      >
         {this.state.min}
       </Text>
-      <Text style={[styles.label, { color: this.state.sliderTextColor }, this.state.sliderTextStyle]}>
+      <Text
+        style={[
+          styles.label,
+          { color: this.state.sliderTextColor },
+          this.state.sliderTextStyle
+        ]}
+      >
         {this.state.max}
       </Text>
     </View>
@@ -145,6 +173,7 @@ export default class App extends React.Component {
       }}
     >
       <TextInput
+        allowFontScaling={false}
         style={[styles.label, { color: this.state.valueTextColor }]}
         ref={this.setValueRef}
         editable={false}
@@ -158,12 +187,11 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.wrapper} {...this.panResponder.panHandlers}>
+          {this.renderDrop()}
 
-          { this.renderDrop() }
+          {this.renderSlider()}
 
-          { this.renderSlider() }
-
-          { this.renderValue() }
+          {this.renderValue()}
         </View>
       </View>
     );
@@ -176,8 +204,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-    paddingLeft: 15,
-    paddingRight: 15
+    paddingLeft: PADDING,
+    paddingRight: PADDING
   },
   wrapper: {
     width: '100%',
