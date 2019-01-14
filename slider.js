@@ -294,7 +294,7 @@ export default class Slider extends React.PureComponent {
                 this.props.sliderTextStyle
               ]}
             >
-              {this.props.range[LEFT]}
+              {this.props.range[RIGHT]}
             </Text>
           )
       }
