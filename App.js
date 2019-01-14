@@ -19,6 +19,7 @@ export default class App extends React.Component {
     this.state = {
       min: 0,
       max: 150,
+      size: 30, // Height of the Slider && (height & width) of the Value & Drop elements
       backgroundColor: '#6168e7',
       valueBorderColor: '#6168e7',
       dropColor: '#6168e7',
@@ -116,18 +117,21 @@ export default class App extends React.Component {
     });
   };
 
+  /* Save the width of the slider, for various calculations */
   onLayout = ({ nativeEvent: { layout } }) => {
     this.width = layout.width;
 
     this.setValueInterpolator();
   };
 
+  /* When we get the slider's width, we can interpolate the values based on the width */
   setValueInterpolator = () => {
     this.valueInterpolator = scaleLinear()
       .domain([0, this.width - PADDING])
       .range([this.state.min, this.state.max])
       .clamp(true);
 
+    /* When the value is interpolated, we can set the initial value & the initial X position */
     this.setInitialValue();
   };
 
@@ -150,6 +154,9 @@ export default class App extends React.Component {
       style={{
         ...styles.drop,
         backgroundColor: this.state.dropColor,
+        height: this.state.size,
+        width: this.state.size,
+        borderRadius: this.state.size / 2,
         transform: [
           { translateY: this.backdropTranslateY },
           { translateX: this.translateX }
@@ -163,7 +170,7 @@ export default class App extends React.Component {
       onLayout={this.onLayout}
       style={[
         styles.sliderBar,
-        { backgroundColor: this.state.backgroundColor }
+        { backgroundColor: this.state.backgroundColor, height: this.state.size }
       ]}
     >
       <Text
@@ -193,6 +200,9 @@ export default class App extends React.Component {
       style={{
         ...styles.value,
         borderColor: this.state.valueBorderColor,
+        height: this.state.size,
+        width: this.state.size,
+        borderRadius: this.state.size/2,
         transform: [
           { translateY: this.translateY },
           { translateX: this.translateX }
@@ -239,26 +249,19 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   drop: {
-    height: 30,
-    width: 30,
-    borderRadius: 15,
     position: 'absolute'
   },
   sliderBar: {
     paddingLeft: 12,
     paddingRight: 12,
     width: '100%',
-    height: 30,
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
   value: {
-    height: 30,
-    width: 30,
     backgroundColor: 'white',
-    borderRadius: 15,
     borderWidth: 3,
     alignItems: 'center',
     justifyContent: 'center',
