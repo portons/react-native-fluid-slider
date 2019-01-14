@@ -23,20 +23,31 @@ export default class App extends React.Component {
       dropColor: '#6168e7',
       sliderTextColor: 'white',
       valueTextColor: 'black',
+      initialValue: 50,
       sliderTextStyle: {
         fontWeight: 'bold'
       }
     };
 
+    /* These 2 are 'Animated Values', which are passed to the Value element, and responsible
+     * for its movement animation while dragging */
     this.translateY = new Animated.Value(0);
     this.translateX = new Animated.Value(0);
 
+    /* This one is responsible for the little 'drop' beneath the value */
     this.backdropTranslateY = new Animated.Value(0);
 
+    /* These ones are used for deltaY calculations, when moving the Value element
+     * The dX always starts from 0, so we need to save its offset */
     this.offsetX = 0;
     this.overflow = 0;
 
+    /* This one adds listeners to the slider component, which are responsible for the 'move' event, that
+     * updates the Value position */
     this.setPanResponder();
+
+    /* Value element text is interpolated from the X position. We're listening to the X position changes,
+     * And interpolate the Value string accordingly */
     this.translateX.addListener(this.interpolateValue);
   }
 
@@ -111,10 +122,23 @@ export default class App extends React.Component {
   setValueInterpolator = () => {
     this.valueInterpolator = scaleLinear()
       .domain([0, this.width - PADDING])
-      .range([this.state.min, this.state.max]);
+      .range([this.state.min, this.state.max])
+      .clamp(true);
+
+    this.setInitialValue();
   };
 
-  interpolateValue = ({ value }) => this.valueRef.setNativeProps({ text: this.valueInterpolator(value).toString() });
+  setInitialValue = () => {
+    const { initialValue } = this.state;
+
+    this.valueRef.setNativeProps({ text: `${initialValue}` });
+    const initialTranslateX = this.valueInterpolator.invert(initialValue);
+
+    this.translateX.setValue(initialTranslateX);
+    this.offsetX = initialTranslateX;
+  };
+
+  interpolateValue = ({ value }) => this.valueRef.setNativeProps({ text: `${this.valueInterpolator(value)}` });
 
   setValueRef = ref => (this.valueRef = ref);
 
