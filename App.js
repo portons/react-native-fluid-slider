@@ -37,6 +37,8 @@ export default class App extends React.Component {
     this.translateY = new Animated.Value(0);
     this.translateX = new Animated.Value(0);
 
+    this.middle = (this.state.min + this.state.max) / 4;
+
     /* This one is responsible for the little 'drop' beneath the value */
     this.backdropTranslateY = new Animated.Value(0);
 
@@ -61,7 +63,11 @@ export default class App extends React.Component {
     this.wait = true;
 
     /* Set the offset to the current touch position */
-    this.offsetX = gestureState.moveX - PADDING * 2;
+    if (gestureState.moveX > this.middle) {
+      this.offsetX = Math.min(this.width - this.state.size, gestureState.moveX - (PADDING * 2));
+    } else {
+      this.offsetX = Math.max(0, gestureState.moveX - (PADDING * 2));
+    }
 
     /* Animated the Value element to current touch position, and only then reset 'wait' flag and allow
      * the Value element to be moved */
@@ -77,7 +83,7 @@ export default class App extends React.Component {
 
     Animated.parallel([
       Animated.spring(this.translateY, {
-        toValue: -31,
+        toValue: -this.state.size - 1,
         duration: 200,
         bounciness: 15
       }),
@@ -119,9 +125,9 @@ export default class App extends React.Component {
           return;
         }
 
-        if (this.offsetX + gestureState.dx > this.width - PADDING * 2) {
+        if (this.offsetX + gestureState.dx > this.width - this.state.size) {
           this.overflow =
-            this.offsetX + gestureState.dx - (this.width - PADDING * 2);
+            this.offsetX + gestureState.dx - (this.width - this.state.size);
 
           return;
         }
