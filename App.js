@@ -17,8 +17,8 @@ export default class App extends React.Component {
 
     /* All of these will be moved to props passed to the slider */
     this.state = {
-      min: 0,
-      max: 150,
+      min: -50,
+      max: 200,
       size: 30, // Height of the Slider && (height & width) of the Value & Drop elements
       backgroundColor: '#6168e7',
       valueBorderColor: '#6168e7',
@@ -26,6 +26,7 @@ export default class App extends React.Component {
       sliderTextColor: 'white',
       valueTextColor: 'black',
       initialValue: 75,
+      sliderBorderRadius: 5,
       sliderTextStyle: {
         fontWeight: 'bold'
       }
@@ -159,14 +160,18 @@ export default class App extends React.Component {
     const { initialValue } = this.state;
 
     this.valueRef.setNativeProps({ text: `${initialValue.toFixed(0)}` });
-    const initialTranslateX = this.valueInterpolator.invert(initialValue.toFixed(0));
+    const initialTranslateX = this.valueInterpolator.invert(
+      initialValue.toFixed(0)
+    );
 
     this.translateX.setValue(initialTranslateX);
     this.offsetX = initialTranslateX;
   };
 
   interpolateValue = ({ value }) =>
-    this.valueRef.setNativeProps({ text: `${this.valueInterpolator(value).toFixed(0)}` });
+    this.valueRef.setNativeProps({
+      text: `${this.valueInterpolator(value).toFixed(0)}`
+    });
 
   setValueRef = ref => (this.valueRef = ref);
 
@@ -191,7 +196,11 @@ export default class App extends React.Component {
       onLayout={this.onLayout}
       style={[
         styles.sliderBar,
-        { backgroundColor: this.state.backgroundColor, height: this.state.size }
+        {
+          backgroundColor: this.state.backgroundColor,
+          height: this.state.size,
+          borderRadius: this.state.sliderBorderRadius
+        }
       ]}
     >
       <Text
@@ -222,7 +231,7 @@ export default class App extends React.Component {
         ...styles.value,
         borderColor: this.state.valueBorderColor,
         height: this.state.size,
-        width: this.state.size,
+        minWidth: this.state.size,
         borderRadius: this.state.size / 2,
         transform: [
           { translateY: this.translateY },
@@ -274,7 +283,6 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 12,
     width: '100%',
-    borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
