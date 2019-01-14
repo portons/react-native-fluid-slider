@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { scaleLinear } from 'd3-scale';
 
-const PADDING = 15;
+const PADDING = 20;
 
 export default class App extends React.Component {
   constructor() {
@@ -62,9 +62,10 @@ export default class App extends React.Component {
        before it's moved to the 'touch' position */
     this.wait = true;
 
+    console.log('gestureState.moveX', gestureState.moveX);
     /* Set the offset to the current touch position */
     if (gestureState.moveX > this.middle) {
-      this.offsetX = Math.min(this.width - this.state.size, gestureState.moveX + (PADDING / 2) - this.state.size);
+      this.offsetX = Math.min(this.sliderWidth - this.state.size, gestureState.moveX + (PADDING / 2) - this.state.size);
     } else {
       this.offsetX = Math.max(0, gestureState.moveX - this.state.size);
     }
@@ -125,9 +126,9 @@ export default class App extends React.Component {
           return;
         }
 
-        if (this.offsetX + gestureState.dx > this.width - this.state.size) {
+        if (this.offsetX + gestureState.dx > this.sliderWidth - this.state.size) {
           this.overflow =
-            this.offsetX + gestureState.dx - (this.width - this.state.size);
+            this.offsetX + gestureState.dx - (this.sliderWidth - this.state.size);
 
           return;
         }
@@ -145,16 +146,28 @@ export default class App extends React.Component {
   };
 
   /* Save the width of the slider, for various calculations */
-  onLayout = ({ nativeEvent: { layout } }) => {
-    this.width = layout.width;
+  onSliderLayout = ({ nativeEvent: { layout } }) => {
+    this.sliderWidth = layout.width;
 
-    this.setValueInterpolator();
+    if (this.wrapperWidth) {
+      this.setValueInterpolator();
+    }
+  };
+
+  onWrapperLayout = ({ nativeEvent: { layout } }) => {
+    this.wrapperWidth = layout.width;
+    this.wrapperStartX = layout.x;
+    this.wrapperEndX = this.wrapperWidth + this.wrapperStartX;
+
+    if (this.sliderWidth) {
+      this.setValueInterpolator();
+    }
   };
 
   /* When we get the slider's width, we can interpolate the values based on the width */
   setValueInterpolator = () => {
     this.valueInterpolator = scaleLinear()
-      .domain([0, this.width - this.state.size])
+      .domain([0, this.sliderWidth - this.state.size])
       .range([this.state.min, this.state.max])
       .clamp(true);
 
@@ -199,7 +212,7 @@ export default class App extends React.Component {
 
   renderSlider = () => (
     <View
-      onLayout={this.onLayout}
+      onLayout={this.onSliderLayout}
       style={[
         styles.sliderBar,
         {
@@ -257,7 +270,7 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.wrapper} {...this.panResponder.panHandlers}>
+        <View style={styles.wrapper} {...this.panResponder.panHandlers} onLayout={this.onWrapperLayout}>
           {this.renderDrop()}
 
           {this.renderSlider()}
