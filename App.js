@@ -62,6 +62,8 @@ export default class App extends React.Component {
        before it's moved to the 'touch' position */
     this.wait = true;
 
+    /* `gestureState.moveX` is the position of the touch ON THE SCREEN, but we need to know where it's relatively
+    * to the sidebar's position inside the screen */
     const normalizedMoveX = gestureState.moveX - this.wrapperStartX;
 
     /* Set the offset to the current touch position */
