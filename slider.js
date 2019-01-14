@@ -8,6 +8,7 @@ import {
   Text
 } from 'react-native';
 import { scaleLinear } from 'd3-scale';
+import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
 
 export default class Slider extends React.PureComponent {
@@ -20,6 +21,8 @@ export default class Slider extends React.PureComponent {
     this.translateX = new Animated.Value(0);
 
     this.middle = (props.min + props.max) / 4;
+    this.currentValue = props.initialValue.toFixed(this.props.decimalPrecision);
+    this.previousCurrentValue = this.currentValue;
 
     /* This one is responsible for the little 'drop' beneath the value */
     this.backdropTranslateY = new Animated.Value(0);
@@ -41,7 +44,7 @@ export default class Slider extends React.PureComponent {
   /* On touch, animated the Value & Drop element positions to go 'up' */
   onTouch = (_, gestureState) => {
     if (this.props.onSlideStart) {
-      this.props.onSlideStart();
+      this.props.onSlideStart(this.currentValue);
     }
     /* Set a flag to prevent 'move' event from changing Value's X position,
        before it's moved to the 'touch' position */
@@ -89,7 +92,7 @@ export default class Slider extends React.PureComponent {
   /* On touch, animated the Value & Drop element positions to go back 'down' */
   onRelease = () => {
     if (this.props.onSlideEnd) {
-      this.props.onSlideEnd();
+      this.props.onSlideEnd(this.currentValue);
     }
 
     Animated.parallel([
@@ -188,10 +191,12 @@ export default class Slider extends React.PureComponent {
       return;
     }
 
+    this.previousCurrentValue = this.currentValue;
     const interpolatedValue = this.valueInterpolator(value).toFixed(this.props.decimalPrecision);
+    this.currentValue = interpolatedValue;
 
     if (this.props.onValueChange) {
-      this.onValueChange(interpolatedValue);
+      this.onValueChange();
     }
 
     this.valueRef.setNativeProps({
@@ -199,9 +204,11 @@ export default class Slider extends React.PureComponent {
     });
   };
 
-  onValueChange = (value) => {
-    requestAnimationFrame(() => this.props.onValueChange(value));
-  };
+  onValueChange = throttle(() => {
+    if (this.currentValue !== this.previousCurrentValue) {
+      this.props.onValueChange(this.currentValue)
+    }
+  }, this.props.onValueChangeThrottle);
 
   setValueRef = ref => (this.valueRef = ref);
 
@@ -302,6 +309,7 @@ Slider.defaultProps = {
   initialValue: 50,
   sliderBorderRadius: 5,
   decimalPrecision: 0,
+  onValueChangeThrottle: 16,
   sliderTextStyle: {
     fontWeight: 'bold'
   }
@@ -321,6 +329,7 @@ Slider.propTypes = {
   sliderBorderRadius: PropTypes.number,
   decimalPrecision: PropTypes.number,
   sliderTextStyle: PropTypes.object,
+  onValueChangeThrottle: PropTypes.number,
   onValueChange: PropTypes.func.isRequired,
   onSlideStart: PropTypes.func,
   onSlideEnd: PropTypes.func

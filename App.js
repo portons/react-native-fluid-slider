@@ -15,9 +15,10 @@ const App = () => (
       }}
     >
       <Slider
-        onValueChange={(value) => console.log('value', value)}
-        onSlideStart={() => console.log('started')}
-        onSlideEnd={() => console.log('ended')}
+        onValueChange={(value) => console.log('LOL', value)}
+        onValueChangeThrottle={16}
+        onSlideStart={(startValue) => console.log('startValue', startValue)}
+        onSlideEnd={(endValue) => console.log('endValue', endValue)}
         min={-50}
         max={200}
         size={30}
