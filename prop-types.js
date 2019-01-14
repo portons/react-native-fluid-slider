@@ -50,7 +50,7 @@ export default {
   decimalPrecision: PropTypes.number,
   sliderTextStyle: PropTypes.object,
   onValueChangeThrottle: PropTypes.number,
-  onValueChange: PropTypes.func.isRequired,
+  onValueChange: PropTypes.func,
   onSlideStart: PropTypes.func,
   onSlideEnd: PropTypes.func,
   leftValueRenderer: PropTypes.func,

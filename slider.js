@@ -45,6 +45,12 @@ export default class Slider extends React.PureComponent {
     this.translateX.addListener(this.interpolateValue);
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.initialValue !== prevProps.initialValue) {
+      this.setInitialValue(true);
+    }
+  }
+
   /* On touch, animated the Value & Drop element positions to go 'up' */
   onTouch = (_, gestureState) => {
     if (this.props.onSlideStart) {
@@ -175,7 +181,7 @@ export default class Slider extends React.PureComponent {
     this.setInitialValue();
   };
 
-  setInitialValue = () => {
+  setInitialValue = (animate: false) => {
     const { initialValue } = this.props;
 
     this.isInitial = true;
@@ -185,8 +191,21 @@ export default class Slider extends React.PureComponent {
       initialValue.toFixed(0)
     );
 
-    this.translateX.setValue(initialTranslateX);
+    if (animate) {
+      this.wait = false;
+
+      Animated.timing(this.translateX, {
+        toValue: initialTranslateX,
+        duration: 100
+      }).start(() => {
+        this.wait = false;
+      });
+    } else {
+      this.translateX.setValue(initialTranslateX);
+    }
+
     this.offsetX = initialTranslateX;
+
   };
 
   interpolateValue = ({ value }) => this.setValue(value);
