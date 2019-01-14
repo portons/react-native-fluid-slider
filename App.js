@@ -110,7 +110,7 @@ export default class App extends React.Component {
 
   setValueInterpolator = () => {
     this.valueInterpolator = scaleLinear()
-      .domain([PADDING, this.width - PADDING])
+      .domain([0, this.width - PADDING])
       .range([this.state.min, this.state.max]);
   };
 
