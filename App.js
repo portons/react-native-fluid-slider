@@ -15,15 +15,16 @@ export default class App extends React.Component {
   constructor() {
     super();
 
+    /* All of these will be moved to props passed to the slider */
     this.state = {
       min: 0,
-      max: 129,
+      max: 150,
       backgroundColor: '#6168e7',
       valueBorderColor: '#6168e7',
       dropColor: '#6168e7',
       sliderTextColor: 'white',
       valueTextColor: 'black',
-      initialValue: 50,
+      initialValue: 75,
       sliderTextStyle: {
         fontWeight: 'bold'
       }
@@ -51,6 +52,7 @@ export default class App extends React.Component {
     this.translateX.addListener(this.interpolateValue);
   }
 
+  /* On touch, animated the Value & Drop element positions to go 'up' */
   onTouch = () => {
     Animated.parallel([
       Animated.spring(this.translateY, {
@@ -68,6 +70,7 @@ export default class App extends React.Component {
     return true;
   };
 
+  /* On touch, animated the Value & Drop element positions to go back 'down' */
   onRelease = () => {
     Animated.parallel([
       Animated.timing(this.translateY, {
