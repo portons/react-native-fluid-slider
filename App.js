@@ -39,7 +39,7 @@ export default class App extends React.Component {
     /* This one is responsible for the little 'drop' beneath the value */
     this.backdropTranslateY = new Animated.Value(0);
 
-    /* These ones are used for deltaY calculations, when moving the Value element
+    /* These ones are used for deltaX calculations, when moving the Value element
      * The dX always starts from 0, so we need to save its offset */
     this.offsetX = 0;
     this.overflow = 0;
