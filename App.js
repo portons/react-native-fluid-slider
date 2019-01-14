@@ -15,12 +15,14 @@ const App = () => (
       }}
     >
       <Slider
+        onValueChange={() => console.log('lol')}
+        onSlideStart={() => {}}
+        onSlideEnd={() => {}}
         min={-50}
         max={200}
         size={30}
         color="#6168e7"
         initialValue={75}
-        sliderBorderRadius={5}
         sliderTextStyle={{
           fontWeight: 'bold'
         }}

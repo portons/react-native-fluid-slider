@@ -36,6 +36,8 @@ export default class Slider extends React.PureComponent {
     /* Value element text is interpolated from the X position. We're listening to the X position changes,
      * And interpolate the Value string accordingly */
     this.translateX.addListener(this.interpolateValue);
+
+    this.setValue = this.setValue.bind(this);
   }
 
   /* On touch, animated the Value & Drop element positions to go 'up' */
@@ -161,7 +163,7 @@ export default class Slider extends React.PureComponent {
   setInitialValue = () => {
     const { initialValue } = this.props;
 
-    this.valueRef.setNativeProps({ text: `${initialValue.toFixed(0)}` });
+    this.setValue(initialValue);
     const initialTranslateX = this.valueInterpolator.invert(
       initialValue.toFixed(0)
     );
@@ -170,10 +172,13 @@ export default class Slider extends React.PureComponent {
     this.offsetX = initialTranslateX;
   };
 
-  interpolateValue = ({ value }) =>
+  interpolateValue = ({ value }) => this.setValue(value);
+
+  setValue(value) {
     this.valueRef.setNativeProps({
       text: `${this.valueInterpolator(value).toFixed(0)}`
     });
+  };
 
   setValueRef = ref => (this.valueRef = ref);
 
@@ -207,7 +212,7 @@ export default class Slider extends React.PureComponent {
     >
       <Text
         style={[
-          styles.label,
+          styles.minMaxLabel,
           { color: this.props.sliderTextColor },
           this.props.sliderTextStyle
         ]}
@@ -216,7 +221,7 @@ export default class Slider extends React.PureComponent {
       </Text>
       <Text
         style={[
-          styles.label,
+          styles.minMaxLabel,
           { color: this.props.sliderTextColor },
           this.props.sliderTextStyle
         ]}
@@ -243,7 +248,7 @@ export default class Slider extends React.PureComponent {
     >
       <TextInput
         allowFontScaling={false}
-        style={[styles.label, { color: this.props.valueTextColor }]}
+        style={[styles.valueLabel, { color: this.props.valueTextColor }, this.props.valueTextStyle]}
         ref={this.setValueRef}
         editable={false}
       />
@@ -270,6 +275,7 @@ Slider.defaultProps = {
   color: '#6168e7',
   sliderTextColor: 'white',
   valueTextColor: 'black',
+  valueTextStyle: {},
   initialValue: 50,
   sliderBorderRadius: 5,
   sliderTextStyle: {
@@ -289,7 +295,10 @@ Slider.propTypes = {
   valueTextColor: PropTypes.string,
   initialValue: PropTypes.number.isRequired,
   sliderBorderRadius: PropTypes.number,
-  sliderTextStyle: PropTypes.object
+  sliderTextStyle: PropTypes.object,
+  onValueChange: PropTypes.func.isRequired,
+  onSlideStart: PropTypes.func,
+  onSlideEnd: PropTypes.func
 };
 
 const styles = StyleSheet.create({
@@ -315,8 +324,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute'
   },
-  label: {
-    fontSize: 10
+  minMaxLabel: {
+    fontSize: 10,
+    fontWeight: '600'
+  },
+  valueLabel: {
+    fontSize: 10,
+    fontWeight: '500'
   },
   whiteText: {
     color: 'white'
