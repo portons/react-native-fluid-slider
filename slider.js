@@ -9,7 +9,11 @@ import {
 } from 'react-native';
 import { scaleLinear } from 'd3-scale';
 import throttle from 'lodash.throttle';
-import PropTypes from 'prop-types';
+
+import PropTypes from './prop-types';
+
+const LEFT = 0;
+const RIGHT = 1;
 
 export default class Slider extends React.PureComponent {
   constructor(props) {
@@ -20,7 +24,7 @@ export default class Slider extends React.PureComponent {
     this.translateY = new Animated.Value(0);
     this.translateX = new Animated.Value(0);
 
-    this.middle = (props.min + props.max) / 4;
+    this.middle = (props.range[LEFT] + props.range[RIGHT]) / 4;
     this.currentValue = props.initialValue.toFixed(this.props.decimalPrecision);
     this.previousCurrentValue = this.currentValue;
 
@@ -164,7 +168,7 @@ export default class Slider extends React.PureComponent {
   setValueInterpolator = () => {
     this.valueInterpolator = scaleLinear()
       .domain([0, this.sliderWidth - this.props.size])
-      .range([this.props.min, this.props.max])
+      .range([this.props.range[LEFT], this.props.range[RIGHT]])
       .clamp(true);
 
     /* When the value is interpolated, we can set the initial value & the initial X position */
@@ -252,7 +256,7 @@ export default class Slider extends React.PureComponent {
           this.props.sliderTextStyle
         ]}
       >
-        {this.props.min}
+        {this.props.range[LEFT]}
       </Text>
       <Text
         style={[
@@ -261,7 +265,7 @@ export default class Slider extends React.PureComponent {
           this.props.sliderTextStyle
         ]}
       >
-        {this.props.max}
+        {this.props.range[RIGHT]}
       </Text>
     </View>
   );
@@ -312,8 +316,6 @@ export default class Slider extends React.PureComponent {
 }
 
 Slider.defaultProps = {
-  min: 0,
-  max: 100,
   size: 30,
   color: '#6168e7',
   sliderTextColor: 'white',
@@ -328,25 +330,7 @@ Slider.defaultProps = {
   }
 };
 
-Slider.propTypes = {
-  min: PropTypes.number.isRequired,
-  max: PropTypes.number.isRequired,
-  size: PropTypes.number.isRequired,
-  color: PropTypes.string,
-  backgroundColor: PropTypes.string,
-  valueBorderColor: PropTypes.string,
-  dropColor: PropTypes.string,
-  sliderTextColor: PropTypes.string,
-  valueTextColor: PropTypes.string,
-  initialValue: PropTypes.number.isRequired,
-  sliderBorderRadius: PropTypes.number,
-  decimalPrecision: PropTypes.number,
-  sliderTextStyle: PropTypes.object,
-  onValueChangeThrottle: PropTypes.number,
-  onValueChange: PropTypes.func.isRequired,
-  onSlideStart: PropTypes.func,
-  onSlideEnd: PropTypes.func
-};
+Slider.propTypes = PropTypes;
 
 const styles = StyleSheet.create({
   wrapper: {

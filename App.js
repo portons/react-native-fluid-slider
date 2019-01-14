@@ -21,13 +21,12 @@ class App extends React.Component {
           }}
         >
           <Slider
+            range={[0, 100]}
+            size={30}
             onValueChange={(value) => this.setState({ value })}
             onValueChangeThrottle={16}
             onSlideStart={(value) => this.setState({ value })}
             onSlideEnd={(value) => this.setState({ value })}
-            min={-50}
-            max={200}
-            size={30}
             color="#6168e7"
             initialValue={this.state.value}
             sliderTextStyle={{
