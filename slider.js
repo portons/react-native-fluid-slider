@@ -36,12 +36,13 @@ export default class Slider extends React.PureComponent {
     /* Value element text is interpolated from the X position. We're listening to the X position changes,
      * And interpolate the Value string accordingly */
     this.translateX.addListener(this.interpolateValue);
-
-    this.setValue = this.setValue.bind(this);
   }
 
   /* On touch, animated the Value & Drop element positions to go 'up' */
   onTouch = (_, gestureState) => {
+    if (this.props.onSlideStart) {
+      this.props.onSlideStart();
+    }
     /* Set a flag to prevent 'move' event from changing Value's X position,
        before it's moved to the 'touch' position */
     this.wait = true;
@@ -87,6 +88,10 @@ export default class Slider extends React.PureComponent {
 
   /* On touch, animated the Value & Drop element positions to go back 'down' */
   onRelease = () => {
+    if (this.props.onSlideEnd) {
+      this.props.onSlideEnd();
+    }
+
     Animated.parallel([
       Animated.timing(this.translateY, {
         toValue: 0,
@@ -163,7 +168,9 @@ export default class Slider extends React.PureComponent {
   setInitialValue = () => {
     const { initialValue } = this.props;
 
+    this.isInitial = true;
     this.setValue(initialValue);
+
     const initialTranslateX = this.valueInterpolator.invert(
       initialValue.toFixed(0)
     );
@@ -174,10 +181,26 @@ export default class Slider extends React.PureComponent {
 
   interpolateValue = ({ value }) => this.setValue(value);
 
-  setValue(value) {
+  setValue = (value) => {
+    if (this.isInitial) {
+      this.isInitial = false;
+
+      return;
+    }
+
+    const interpolatedValue = this.valueInterpolator(value);
+
+    if (this.props.onValueChange) {
+      this.onValueChange(interpolatedValue);
+    }
+
     this.valueRef.setNativeProps({
-      text: `${this.valueInterpolator(value).toFixed(0)}`
+      text: `${interpolatedValue.toFixed(0)}`
     });
+  };
+
+  onValueChange = (value) => {
+    requestAnimationFrame(() => this.props.onValueChange(value));
   };
 
   setValueRef = ref => (this.valueRef = ref);
