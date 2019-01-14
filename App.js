@@ -64,9 +64,9 @@ export default class App extends React.Component {
 
     /* Set the offset to the current touch position */
     if (gestureState.moveX > this.middle) {
-      this.offsetX = Math.min(this.width - this.state.size, gestureState.moveX - (PADDING * 2));
+      this.offsetX = Math.min(this.width - this.state.size, gestureState.moveX + (PADDING / 2) - this.state.size);
     } else {
-      this.offsetX = Math.max(0, gestureState.moveX - (PADDING * 2));
+      this.offsetX = Math.max(0, gestureState.moveX - this.state.size);
     }
 
     /* Animated the Value element to current touch position, and only then reset 'wait' flag and allow
