@@ -55,10 +55,15 @@ export default class App extends React.Component {
 
   /* On touch, animated the Value & Drop element positions to go 'up' */
   onTouch = (_, gestureState) => {
+    /* Set a flag to prevent 'move' event from changing Value's X position,
+       before it's moved to the 'touch' position */
     this.wait = true;
 
+    /* Set the offset to the current touch position */
     this.offsetX = gestureState.moveX - PADDING * 2;
 
+    /* Animated the Value element to current touch position, and only then reset 'wait' flag and allow
+     * the Value element to be moved */
     Animated.timing(this.translateX, {
       toValue: this.offsetX,
       duration: 100
