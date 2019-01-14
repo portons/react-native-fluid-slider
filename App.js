@@ -1,12 +1,26 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Animated } from 'react-native';
 
 import Slider from './slider';
 
 class App extends React.Component {
-  state = {
-    value: 10
-  };
+  constructor() {
+    super();
+
+    this.animation = new Animated.Value(10);
+    this.color = this.animation.interpolate({
+      inputRange: [0, 100],
+      outputRange: ['red', 'blue']
+    });
+    this.borderRadius = this.animation.interpolate({
+      inputRange: [0, 100],
+      outputRange: [0, 50]
+    });
+    this.rotation = this.animation.interpolate({
+      inputRange: [0, 100],
+      outputRange: ['0deg', '360deg']
+    });
+  }
 
   render() {
     return (
@@ -23,6 +37,14 @@ class App extends React.Component {
           <Slider
             range={[0, 100]}
             size={30}
+            leftValueRenderer={() => (
+              <Text style={{ color: 'white' }}>RED</Text>
+            )}
+            rightValueRenderer={() => (
+              <Text style={{ color: 'white' }}>BLUE</Text>
+            )}
+            onValueChange={value => this.animation.setValue(value)}
+            onSlideEnd={value => this.animation.setValue(value)}
             initialValue={10}
             sliderTextStyle={{
               fontWeight: 'bold'
@@ -30,11 +52,20 @@ class App extends React.Component {
           />
         </View>
 
-        <Text style={{ marginBottom: 30 }}>{ this.state.value }</Text>
+        <Animated.View
+          style={{
+            width: 100,
+            height: 100,
+            backgroundColor: this.color,
+            marginTop: 30,
+            borderRadius: this.borderRadius,
+            transform: [{ rotate: this.rotation }]
+          }}
+        />
       </View>
-    )
+    );
   }
-};
+}
 
 const styles = StyleSheet.create({
   container: {
