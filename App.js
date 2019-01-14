@@ -38,10 +38,13 @@ class App extends React.Component {
             range={[0, 100]}
             size={30}
             leftValueRenderer={() => (
-              <Text style={{ color: 'white' }}>RED</Text>
+              <Text style={{ color: 'white', fontSize: 7 }}>RED</Text>
             )}
             rightValueRenderer={() => (
-              <Text style={{ color: 'white' }}>BLUE</Text>
+              <Text style={{ color: 'white', fontSize: 7 }}>BLUE</Text>
+            )}
+            middleValueRenderer={() => (
+              <Text style={{ color: 'white', fontSize: 7 }}>LOL</Text>
             )}
             onValueChange={value => this.animation.setValue(value)}
             onSlideEnd={value => this.animation.setValue(value)}

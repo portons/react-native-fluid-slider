@@ -55,4 +55,5 @@ export default {
   onSlideEnd: PropTypes.func,
   leftValueRenderer: PropTypes.func,
   rightValueRenderer: PropTypes.func,
+  middleValueRenderer: PropTypes.func,
 }

@@ -284,6 +284,12 @@ export default class Slider extends React.PureComponent {
       }
 
       {
+        this.props.middleValueRenderer && (
+          this.props.middleValueRenderer()
+        )
+      }
+
+      {
         this.props.rightValueRenderer
           ? this.props.rightValueRenderer()
           : (
