@@ -44,7 +44,7 @@ export default class Slider extends React.PureComponent {
   /* On touch, animated the Value & Drop element positions to go 'up' */
   onTouch = (_, gestureState) => {
     if (this.props.onSlideStart) {
-      this.props.onSlideStart(this.currentValue);
+      this.props.onSlideStart(Number(this.currentValue));
     }
     /* Set a flag to prevent 'move' event from changing Value's X position,
        before it's moved to the 'touch' position */
@@ -92,7 +92,7 @@ export default class Slider extends React.PureComponent {
   /* On touch, animated the Value & Drop element positions to go back 'down' */
   onRelease = () => {
     if (this.props.onSlideEnd) {
-      this.props.onSlideEnd(this.currentValue);
+      this.props.onSlideEnd(Number(this.currentValue));
     }
 
     Animated.parallel([
@@ -200,13 +200,13 @@ export default class Slider extends React.PureComponent {
     }
 
     this.valueRef.setNativeProps({
-      text: `${interpolatedValue}`
+      text: interpolatedValue
     });
   };
 
   onValueChange = throttle(() => {
     if (this.currentValue !== this.previousCurrentValue) {
-      this.props.onValueChange(this.currentValue)
+      this.props.onValueChange(Number(this.currentValue))
     }
   }, this.props.onValueChangeThrottle);
 
