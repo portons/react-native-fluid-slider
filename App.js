@@ -9,12 +9,17 @@ import {
 } from 'react-native';
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.state = {
       min: 0,
-      max: 129
+      max: 129,
+      backgroundColor: '#6168e7',
+      valueBorderColor: '#6168e7',
+      dropColor: '#6168e7',
+      sliderTextColor: 'white',
+      valueTextColor: 'black'
     };
 
     this.translateY = new Animated.Value(0);
@@ -54,7 +59,7 @@ export default class App extends React.Component {
       Animated.timing(this.backdropTranslateY, {
         toValue: 0,
         duration: 200
-      }),
+      })
     ]).start();
   };
 
@@ -66,14 +71,14 @@ export default class App extends React.Component {
         this.translateX.setValue(0);
       },
       onPanResponderMove: (_, gestureState) => {
-        if ((this.offsetX + gestureState.dx) < 0) {
+        if (this.offsetX + gestureState.dx < 0) {
           this.overflow = this.offsetX + gestureState.dx;
 
           return;
         }
 
-        if ((this.offsetX + gestureState.dx) > this.width - 30) {
-          this.overflow = (this.offsetX + gestureState.dx) - (this.width - 30);
+        if (this.offsetX + gestureState.dx > this.width - 30) {
+          this.overflow = this.offsetX + gestureState.dx - (this.width - 30);
 
           return;
         }
@@ -88,63 +93,70 @@ export default class App extends React.Component {
         this.onRelease();
         this.translateX.flattenOffset();
       }
-    })
+    });
   };
 
   onLayout = ({ nativeEvent: { layout } }) => {
     this.width = layout.width;
   };
 
-  setValueRef = (ref) => this.valueRef = ref;
+  setValueRef = ref => (this.valueRef = ref);
 
   render() {
+    const {
+      backgroundColor,
+      valueBorderColor,
+      dropColor,
+      sliderTextColor,
+      valueTextColor,
+      min,
+      max
+    } = this.state;
+
     return (
       <View style={styles.container}>
-        <View style={{ width: '100%', position: 'relative' }}
-              { ...this.panResponder.panHandlers }>
-          <Animated.View style={{
-            transform: [{ translateY: this.backdropTranslateY }, { translateX: this.translateX }],
-            height: 30,
-            width: 30,
-            backgroundColor: '#6168e7',
-            borderRadius: 15,
-            position: 'absolute'
-          }}/>
+        <View style={styles.wrapper} {...this.panResponder.panHandlers}>
+          <Animated.View
+            style={{
+              ...styles.drop,
+              backgroundColor: dropColor,
+              transform: [
+                { translateY: this.backdropTranslateY },
+                { translateX: this.translateX }
+              ]
+            }}
+          />
 
           <View
             onLayout={this.onLayout}
-            style={{
-              paddingLeft: 10,
-              paddingRight: 10,
-              backgroundColor: '#6168e7',
-              width: '100%',
-              height: 30,
-              borderRadius: 5,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}
+            style={[styles.sliderBar, { backgroundColor }]}
           >
-            <Text style={{ color: 'white' }}>{ this.state.min }</Text>
-            <Text style={{ color: 'white' }}>{ this.state.max }</Text>
+            <Text style={[styles.label, { color: sliderTextColor }]}>
+              {min}
+            </Text>
+            <Text style={[styles.label, { color: sliderTextColor }]}>
+              {max}
+            </Text>
           </View>
 
           <Animated.View
             pointerEvents="none"
             style={{
-              transform: [{ translateY: this.translateY }, { translateX: this.translateX }],
-              height: 30,
-              width: 30,
-              backgroundColor: 'white',
-              borderColor: '#6168e7',
-              borderRadius: 15,
-              borderWidth: 3,
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'absolute'
+              ...styles.value,
+              borderColor: valueBorderColor,
+              transform: [
+                { translateY: this.translateY },
+                { translateX: this.translateX }
+              ]
             }}
           >
-            <TextInput style={{ fontSize: 10 }} ref={this.setValueRef} editable={false}>0</TextInput>
+            <TextInput
+              style={[styles.label, { color: valueTextColor }]}
+              ref={this.setValueRef}
+              editable={false}
+            >
+              0
+            </TextInput>
           </Animated.View>
         </View>
       </View>
@@ -160,5 +172,41 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
     paddingLeft: 15,
     paddingRight: 15
+  },
+  wrapper: {
+    width: '100%',
+    position: 'relative'
+  },
+  drop: {
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    position: 'absolute'
+  },
+  sliderBar: {
+    paddingLeft: 12,
+    paddingRight: 12,
+    width: '100%',
+    height: 30,
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  value: {
+    height: 30,
+    width: 30,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    borderWidth: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute'
+  },
+  label: {
+    fontSize: 10
+  },
+  whiteText: {
+    color: 'white'
   }
 });
