@@ -205,7 +205,6 @@ export default class Slider extends React.PureComponent {
     }
 
     this.offsetX = initialTranslateX;
-
   };
 
   interpolateValue = ({ value }) => this.setValue(value);

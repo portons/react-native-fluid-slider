@@ -23,10 +23,7 @@ class App extends React.Component {
           <Slider
             range={[0, 100]}
             size={30}
-            onValueChange={(value) => this.setState({ value })}
-            onSlideEnd={(value) => this.setState({ value })}
-            onSlideStart={(value) => this.setState({ value })}
-            initialValue={0}
+            initialValue={10}
             sliderTextStyle={{
               fontWeight: 'bold'
             }}
