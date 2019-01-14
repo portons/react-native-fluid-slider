@@ -68,7 +68,7 @@ export default class App extends React.Component {
     if (normalizedMoveX > this.middle) {
       this.offsetX = Math.min(this.sliderWidth - this.state.size, normalizedMoveX - (this.state.size/2));
     } else {
-      this.offsetX = Math.max(0, normalizedMoveX - this.state.size);
+      this.offsetX = Math.max(0, normalizedMoveX - (this.state.size / 2));
     }
 
     /* Animated the Value element to current touch position, and only then reset 'wait' flag and allow
@@ -150,15 +150,13 @@ export default class App extends React.Component {
   onSliderLayout = ({ nativeEvent: { layout } }) => {
     this.sliderWidth = layout.width;
 
-    if (this.wrapperWidth) {
+    if (this.wrapperStartX) {
       this.setValueInterpolator();
     }
   };
 
   onWrapperLayout = ({ nativeEvent: { layout } }) => {
-    this.wrapperWidth = layout.width;
     this.wrapperStartX = layout.x;
-    this.wrapperEndX = this.wrapperWidth + this.wrapperStartX;
 
     if (this.sliderWidth) {
       this.setValueInterpolator();
