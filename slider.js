@@ -56,9 +56,12 @@ export default class Slider extends React.PureComponent {
 
     /* Set the offset to the current touch position */
     if (normalizedMoveX > this.middle) {
-      this.offsetX = Math.min(this.sliderWidth - this.props.size, normalizedMoveX - (this.props.size/2));
+      this.offsetX = Math.min(
+        this.sliderWidth - this.props.size,
+        normalizedMoveX - this.props.size / 2
+      );
     } else {
-      this.offsetX = Math.max(0, normalizedMoveX - (this.props.size / 2));
+      this.offsetX = Math.max(0, normalizedMoveX - this.props.size / 2);
     }
 
     /* Animated the Value element to current touch position, and only then reset 'wait' flag and allow
@@ -90,7 +93,11 @@ export default class Slider extends React.PureComponent {
   };
 
   /* On touch, animated the Value & Drop element positions to go back 'down' */
-  onRelease = () => {
+  onRelease = (_, gestureState) => {
+    this.offsetX = this.offsetX + gestureState.dx - this.overflow;
+    this.overflow = 0;
+    this.translateX.flattenOffset();
+
     if (this.props.onSlideEnd) {
       this.props.onSlideEnd(Number(this.currentValue));
     }
@@ -107,36 +114,32 @@ export default class Slider extends React.PureComponent {
     ]).start();
   };
 
+  onMove = (_, gestureState) => {
+    if (this.wait) {
+      return;
+    }
+
+    if (this.offsetX + gestureState.dx < 0) {
+      this.overflow = this.offsetX + gestureState.dx;
+
+      return;
+    }
+
+    if (this.offsetX + gestureState.dx > this.sliderWidth - this.props.size) {
+      this.overflow =
+        this.offsetX + gestureState.dx - (this.sliderWidth - this.props.size);
+
+      return;
+    }
+
+    this.translateX.setValue(gestureState.dx);
+  };
+
   setPanResponder = () => {
     this.panResponder = PanResponder.create({
       onMoveShouldSetPanResponder: this.onTouch,
-      onPanResponderMove: (_, gestureState) => {
-        if (this.wait) {
-          return;
-        }
-
-        if (this.offsetX + gestureState.dx < 0) {
-          this.overflow = this.offsetX + gestureState.dx;
-
-          return;
-        }
-
-        if (this.offsetX + gestureState.dx > this.sliderWidth - this.props.size) {
-          this.overflow =
-            this.offsetX + gestureState.dx - (this.sliderWidth - this.props.size);
-
-          return;
-        }
-
-        this.translateX.setValue(gestureState.dx);
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        this.offsetX = this.offsetX + gestureState.dx - this.overflow;
-        this.overflow = 0;
-
-        this.onRelease();
-        this.translateX.flattenOffset();
-      }
+      onPanResponderMove: this.onMove,
+      onPanResponderRelease: this.onRelease
     });
   };
 
@@ -184,7 +187,7 @@ export default class Slider extends React.PureComponent {
 
   interpolateValue = ({ value }) => this.setValue(value);
 
-  setValue = (value) => {
+  setValue = value => {
     if (this.isInitial) {
       this.isInitial = false;
 
@@ -192,7 +195,9 @@ export default class Slider extends React.PureComponent {
     }
 
     this.previousCurrentValue = this.currentValue;
-    const interpolatedValue = this.valueInterpolator(value).toFixed(this.props.decimalPrecision);
+    const interpolatedValue = this.valueInterpolator(value).toFixed(
+      this.props.decimalPrecision
+    );
     this.currentValue = interpolatedValue;
 
     if (this.props.onValueChange) {
@@ -206,7 +211,7 @@ export default class Slider extends React.PureComponent {
 
   onValueChange = throttle(() => {
     if (this.currentValue !== this.previousCurrentValue) {
-      this.props.onValueChange(Number(this.currentValue))
+      this.props.onValueChange(Number(this.currentValue));
     }
   }, this.props.onValueChangeThrottle);
 
@@ -278,7 +283,11 @@ export default class Slider extends React.PureComponent {
     >
       <TextInput
         allowFontScaling={false}
-        style={[styles.valueLabel, { color: this.props.valueTextColor }, this.props.valueTextStyle]}
+        style={[
+          styles.valueLabel,
+          { color: this.props.valueTextColor },
+          this.props.valueTextStyle
+        ]}
         ref={this.setValueRef}
         editable={false}
       />
@@ -287,7 +296,11 @@ export default class Slider extends React.PureComponent {
 
   render() {
     return (
-      <View style={styles.wrapper} {...this.panResponder.panHandlers} onLayout={this.onWrapperLayout}>
+      <View
+        style={styles.wrapper}
+        {...this.panResponder.panHandlers}
+        onLayout={this.onWrapperLayout}
+      >
         {this.renderDrop()}
 
         {this.renderSlider()}
