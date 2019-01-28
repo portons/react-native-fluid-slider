@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, View, Text, Animated } from 'react-native';
 
-import Slider from './slider';
+// import Slider from 'react-native-fluid-slider';
+const Slider = () => <View />;
 
 class App extends React.Component {
   constructor() {

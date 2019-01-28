@@ -1,7 +1,9 @@
-/** @format */
+import { Platform } from 'react-native';
 
-import {AppRegistry} from 'react-native';
-import App from './App';
-import {name as appName} from './app.json';
+const Slider = Platform.select({
+  ios: () => require('./lib/slider.ios').default,
+  android: () => require('./lib/slider.android').default
+})();
 
-AppRegistry.registerComponent(appName, () => App);
+export default Slider;
+
