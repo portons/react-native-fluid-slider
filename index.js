@@ -1,3 +1,6 @@
-import SlickSlider from 'lib/slick-slider';
+import { Platform } from 'react-native'
 
-export default SlickSlider;
+export default Platform.select({
+  ios: require('lib/slick-slider.ios'),
+  android: require('lib/slick-slider.android')
+});
