@@ -1,4 +1,3 @@
-import Slider from 'lib/fluid-slider';
+import Slider from 'lib/slick-slider';
 
 export default Slider;
-
