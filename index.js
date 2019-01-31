@@ -1,9 +1,4 @@
-import { Platform } from 'react-native';
-
-const Slider = Platform.select({
-  ios: () => require('./lib/slider.ios').default,
-  android: () => require('./lib/slider.android').default
-})();
+import Slider from 'lib/slider';
 
 export default Slider;
 
