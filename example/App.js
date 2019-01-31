@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Animated } from 'react-native';
 
 // import Slider from 'react-native-fluid-slider';
 const Slider = () => <View />;
+// import Slider from '../lib/slider';
 
 class App extends React.Component {
   constructor() {
@@ -41,11 +42,11 @@ class App extends React.Component {
             leftValueRenderer={() => (
               <Text style={{ color: 'white', fontSize: 7 }}>RED</Text>
             )}
-            rightValueRenderer={() => (
-              <Text style={{ color: 'white', fontSize: 7 }}>BLUE</Text>
-            )}
             middleValueRenderer={() => (
               <Text style={{ color: 'white', fontSize: 7 }}>LOL</Text>
+            )}
+            rightValueRenderer={() => (
+              <Text style={{ color: 'white', fontSize: 7 }}>BLUE</Text>
             )}
             onValueChange={value => this.animation.setValue(value)}
             onSlideEnd={value => this.animation.setValue(value)}
