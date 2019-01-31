@@ -1,4 +1,4 @@
-# React Native Fluid Slider (JS only implementation)
+# React Native Slick Slider
 
 ## Documentation: TBD
 ___
