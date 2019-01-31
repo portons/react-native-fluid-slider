@@ -1,3 +1,3 @@
-import Slider from 'lib/slick-slider';
+import SlickSlider from 'lib/slick-slider';
 
-export default Slider;
+export default SlickSlider;
